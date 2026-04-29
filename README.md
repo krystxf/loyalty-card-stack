@@ -6,7 +6,7 @@ Built to deploy on Vercel out of the box — connect the repo, add the env vars 
 
 ## Setup
 
-### Cloudflare Quick Tunnel
+### Cloudflare Quick Tunnel (optional)
 
 Apple Wallet requires the pass web service to be reachable over public HTTPS, so for local development you need to expose `next dev` through a tunnel. Cloudflare Quick Tunnels are the simplest option — no account, no DNS, no config.
 
@@ -32,10 +32,11 @@ Apple Wallet requires the pass web service to be reachable over public HTTPS, so
 
    Start `pnpm dev` after changing env vars.
 
-Notes:
+> [!NOTE]
+> - Quick Tunnel URLs are ephemeral — you get a new hostname every run. Re-issued passes will reference the old URL, so regenerate any passes you want to test live updates on after restarting the tunnel.
+> - For a stable hostname, use a named tunnel (`cloudflared tunnel create`) bound to a domain on your Cloudflare account.
 
-- Quick Tunnel URLs are ephemeral — you get a new hostname every run. Re-issued passes will reference the old URL, so regenerate any passes you want to test live updates on after restarting the tunnel.
-- For a stable hostname, use a named tunnel (`cloudflared tunnel create`) bound to a domain on your Cloudflare account.
+
 
 ### Apple Wallet certificates
 
