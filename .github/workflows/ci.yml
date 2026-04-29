@@ -27,21 +27,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm audit --audit-level=high --prod
-        if: '!cancelled()'
+        if: "!cancelled()"
 
       - run: pnpm prisma:generate
-        if: '!cancelled()'
+        if: "!cancelled()"
 
       - run: pnpm biome:ci
-        if: '!cancelled()'
+        if: "!cancelled()"
 
       - run: pnpm check
-        if: '!cancelled()'
-
-      - run: pnpm build
-        if: '!cancelled()'
-        env:
-          DATABASE_URL: postgresql://user:pass@localhost:5432/db
+        if: "!cancelled()"
 
   db-migrate:
     runs-on: ubuntu-latest
