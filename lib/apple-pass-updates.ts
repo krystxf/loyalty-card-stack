@@ -2,6 +2,8 @@ import { connect } from "node:http2";
 
 import "server-only";
 
+import { after } from "next/server";
+
 import { env } from "@/env";
 import { prisma } from "@/lib/db";
 import { getApplePassCredentials } from "./apple-pass-credentials";
@@ -340,7 +342,7 @@ export async function touchWalletPassAndSendUpdate(customerId: string) {
     return;
   }
 
-  await sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations);
+  after(() => sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations));
 }
 
 export async function getWalletPassLastModified(customerId: string) {
