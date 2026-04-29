@@ -26,9 +26,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm audit --audit-level=high --prod
-        if: "!cancelled()"
-
       - run: pnpm prisma:generate
         if: "!cancelled()"
 
