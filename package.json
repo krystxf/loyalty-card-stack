@@ -21,6 +21,7 @@
     ]
   },
   "pnpm": {
+    "minimumReleaseAge": 10080,
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
