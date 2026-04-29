@@ -19,7 +19,8 @@
       "@prisma/client",
       "@prisma/engines",
       "esbuild",
-      "prisma"
+      "prisma",
+      "sharp"
     ],
     "overrides": {
       "effect@<3.20.0": ">=3.20.0"

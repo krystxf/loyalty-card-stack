@@ -2,6 +2,8 @@
 
 A self-hosted loyalty card system that issues Apple Wallet passes for cafes and small businesses. Customers add a pass to their phone, staff scan its QR code to add stamps, and the pass updates over the air via Apple's PassKit web service.
 
+Built to deploy on Vercel out of the box — connect the repo, add the env vars below, and the rest (Postgres via the Prisma Postgres marketplace integration, Fluid Compute functions, automatic HTTPS) is handled by the platform. Self-hosting on your own infrastructure works too; nothing here is Vercel-specific.
+
 ## Setup
 
 ### Cloudflare Quick Tunnel
