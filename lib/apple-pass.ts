@@ -14,6 +14,9 @@ const supportsPassUpdates = env.PUBLIC_BASE_URL?.startsWith("https://") ?? false
 const PASS_FOREGROUND_COLOR = "rgb(26, 10, 0)";
 const PASS_BACKGROUND_COLOR = "rgb(245, 237, 228)";
 const PASS_LABEL_COLOR = "rgb(26, 10, 0)";
+const PASS_ORGANIZATION_NAME = "Cafe";
+const PASS_DESCRIPTION = "Cafe Loyalty Card";
+const PASS_LOGO_TEXT = "Cafe";
 const PASS_ASSETS = [
   { density: "1x" as const, fileName: "icon.png", imageType: "icon" as const },
   { density: "2x" as const, fileName: "icon@2x.png", imageType: "icon" as const },
@@ -55,8 +58,8 @@ function buildPassFields(customer: ApplePassCustomer): Partial<ApplePass> {
       : {}),
     barcode,
     barcodes: [barcode],
-    description: env.APPLE_PASS_DESCRIPTION,
-    organizationName: env.APPLE_PASS_ORGANIZATION_NAME,
+    description: PASS_DESCRIPTION,
+    organizationName: PASS_ORGANIZATION_NAME,
     serialNumber: customer.id,
     storeCard: {
       headerFields: [
@@ -108,12 +111,12 @@ async function buildTemplate() {
     "storeCard",
     {
       backgroundColor: PASS_BACKGROUND_COLOR,
-      description: env.APPLE_PASS_DESCRIPTION,
+      description: PASS_DESCRIPTION,
       foregroundColor: PASS_FOREGROUND_COLOR,
       formatVersion: 1,
       labelColor: PASS_LABEL_COLOR,
-      logoText: env.APPLE_PASS_LOGO_TEXT,
-      organizationName: env.APPLE_PASS_ORGANIZATION_NAME,
+      logoText: PASS_LOGO_TEXT,
+      organizationName: PASS_ORGANIZATION_NAME,
       passTypeIdentifier: env.APPLE_PASS_TYPE_IDENTIFIER,
       teamIdentifier: env.APPLE_TEAM_IDENTIFIER,
     },

@@ -1,14 +1,6 @@
 import { Box, Text } from "@chakra-ui/react";
 
-export function StatCard({
-  highlight,
-  label,
-  value,
-}: {
-  highlight?: boolean;
-  label: string;
-  value: number | string;
-}) {
+export function StatCard({ highlight, label, value }: { highlight?: boolean; label: string; value: number | string }) {
   return (
     <Box
       bg={highlight ? "green.subtle" : "bg.subtle"}

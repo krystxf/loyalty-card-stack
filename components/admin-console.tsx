@@ -9,11 +9,7 @@ import { ScannerPanel } from "./admin/scanner-panel";
 import { type ActionKind, type Customer, defaultRewardThreshold, type LookupSource } from "./admin/types";
 import { extractCustomerId } from "./admin/utils";
 
-export function AdminConsole({
-  applePassEnabled,
-}: {
-  applePassEnabled: boolean;
-}) {
+export function AdminConsole({ applePassEnabled }: { applePassEnabled: boolean }) {
   const [lastPayload, setLastPayload] = useState("");
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [rewardThreshold, setRewardThreshold] = useState(defaultRewardThreshold);

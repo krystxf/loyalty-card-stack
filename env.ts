@@ -17,9 +17,6 @@ const parsedEnv = createEnv({
     APPLE_PASS_CERT_PEM: z.string().optional(),
     APPLE_PASS_PRIVATE_KEY_PEM: z.string().optional(),
     APPLE_PASS_KEY_PASSPHRASE: z.string().optional(),
-    APPLE_PASS_ORGANIZATION_NAME: z.string().default("Cafe"),
-    APPLE_PASS_DESCRIPTION: z.string().default("Cafe Loyalty Card"),
-    APPLE_PASS_LOGO_TEXT: z.string().default("Cafe"),
   },
   runtimeEnv: {
     PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL,
@@ -33,9 +30,6 @@ const parsedEnv = createEnv({
     APPLE_PASS_CERT_PEM: process.env.APPLE_PASS_CERT_PEM,
     APPLE_PASS_PRIVATE_KEY_PEM: process.env.APPLE_PASS_PRIVATE_KEY_PEM,
     APPLE_PASS_KEY_PASSPHRASE: process.env.APPLE_PASS_KEY_PASSPHRASE,
-    APPLE_PASS_ORGANIZATION_NAME: process.env.APPLE_PASS_ORGANIZATION_NAME,
-    APPLE_PASS_DESCRIPTION: process.env.APPLE_PASS_DESCRIPTION,
-    APPLE_PASS_LOGO_TEXT: process.env.APPLE_PASS_LOGO_TEXT,
   },
   emptyStringAsUndefined: true,
 });

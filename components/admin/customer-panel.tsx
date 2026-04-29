@@ -38,7 +38,11 @@ export function CustomerPanel({
         <Stack gap={5}>
           <SimpleGrid columns={{ base: 2, md: 4 }} gap={3}>
             <StatCard label="Progress" value={`${customer.stampsInCycle}/${rewardThreshold}`} />
-            <StatCard highlight={customer.rewardsAvailable > 0} label="Rewards ready" value={customer.rewardsAvailable} />
+            <StatCard
+              highlight={customer.rewardsAvailable > 0}
+              label="Rewards ready"
+              value={customer.rewardsAvailable}
+            />
             <StatCard label="Paid coffees" value={customer.totalPaidCoffees} />
             <StatCard label="Free redeemed" value={customer.totalFreeRedeemed} />
           </SimpleGrid>
