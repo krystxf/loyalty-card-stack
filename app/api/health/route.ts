@@ -1,7 +1,6 @@
-import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
-
 import { getApplePassReadiness } from "@/lib/apple-pass-readiness";
+import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
 

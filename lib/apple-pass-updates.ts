@@ -2,9 +2,8 @@ import { connect } from "node:http2";
 
 import "server-only";
 
-import { prisma } from "@/lib/db";
-
 import { env } from "@/env";
+import { prisma } from "@/lib/db";
 import { getApplePassCredentials } from "./apple-pass-credentials";
 import { isApplePassEnabled } from "./wallet-features";
 
