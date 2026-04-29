@@ -317,32 +317,34 @@ export async function listUpdatedPassSerialNumbers(
   };
 }
 
-export async function touchWalletPassAndSendUpdate(customerId: string) {
+export function touchWalletPassAndSendUpdate(customerId: string) {
   if (!isApplePassEnabled()) {
     return;
   }
 
-  const customer = await prisma.customer.update({
-    where: { id: customerId },
-    data: {
-      revision: {
-        increment: 1,
-      },
-    },
-    include: {
-      appleRegistrations: {
-        include: {
-          device: true,
+  after(async () => {
+    const customer = await prisma.customer.update({
+      where: { id: customerId },
+      data: {
+        revision: {
+          increment: 1,
         },
       },
-    },
+      include: {
+        appleRegistrations: {
+          include: {
+            device: true,
+          },
+        },
+      },
+    });
+
+    if (customer.appleRegistrations.length === 0) {
+      return;
+    }
+
+    await sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations);
   });
-
-  if (customer.appleRegistrations.length === 0) {
-    return;
-  }
-
-  after(() => sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations));
 }
 
 export async function getWalletPassLastModified(customerId: string) {
