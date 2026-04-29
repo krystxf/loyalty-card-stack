@@ -1,0 +1,87 @@
+.shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fff7f0 0%, #f7efe6 100%);
+  color: #4b2f23;
+}
+
+.beans {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 65%;
+  background-image: url("/background/coffee-beans.png");
+  background-repeat: repeat;
+  background-size: 400px 400px;
+  opacity: 0.15;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.85) 40%, rgba(0, 0, 0, 0) 100%);
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #ead9cb;
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 24px 70px rgba(75, 47, 35, 0.12);
+}
+
+.heading {
+  margin: 0;
+  font-size: 32px;
+  line-height: 0.95;
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .heading {
+    font-size: 46px;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.appleLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  transition: opacity 0.15s;
+}
+
+.appleLink:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+
+.appleBadge {
+  height: 56px;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 22px;
+  padding-top: 18px;
+  font-size: 14px;
+  color: #856857;
+}
+
+.adminLink {
+  color: #6b4833;
+  text-decoration: underline;
+}

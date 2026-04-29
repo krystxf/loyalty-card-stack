@@ -1,0 +1,9 @@
+{
+  "buildCommand": "prisma generate && prisma migrate deploy && next build",
+  "crons": [
+    {
+      "path": "/api/cron/cleanup-pending-customers",
+      "schedule": "0 0 * * *"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WalletPassState {
+  PENDING
+  ACTIVE
+}
+
+enum CoffeeEventType {
+  PAID
+  REWARD_EARNED
+  REWARD_REDEEMED
+  MANUAL_ADJUSTMENT
+}
+
+model Customer {
+  id                 String                  @id
+  appleAuthToken     String                  @unique
+  revision           Int                     @default(0)
+  state              WalletPassState         @default(PENDING)
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  coffeeEvents       CoffeeEvent[]
+  appleRegistrations ApplePassRegistration[]
+}
+
+model CoffeeEvent {
+  id         Int             @id @default(autoincrement())
+  customerId String
+  type       CoffeeEventType
+  count      Int             @default(1)
+  createdAt  DateTime        @default(now())
+  customer   Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, createdAt(sort: Desc)])
+}
+
+model AppleDevice {
+  deviceLibraryIdentifier String                  @id
+  pushToken               String
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  registrations           ApplePassRegistration[]
+}
+
+model ApplePassRegistration {
+  id                      String      @id @default(cuid())
+  customerId              String
+  deviceLibraryIdentifier String
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  customer                Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  device                  AppleDevice @relation(fields: [deviceLibraryIdentifier], references: [deviceLibraryIdentifier], onDelete: Cascade)
+
+  @@unique([customerId, deviceLibraryIdentifier])
+  @@index([deviceLibraryIdentifier])
+}
