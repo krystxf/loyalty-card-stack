@@ -5,7 +5,9 @@ import { Prisma } from "@prisma/client";
 import { type CoffeeEventType, prisma } from "@/lib/db";
 
 import type { ApplePassCustomer } from "./apple-pass";
-import { touchWalletPassAndSendUpdate } from "./apple-pass-updates";
+import { touchApplePassAndSendUpdate } from "./apple-pass-updates";
+import type { GoogleWalletCustomer } from "./google-wallet";
+import { touchGoogleWalletAndSendUpdate } from "./google-wallet-updates";
 import {
   deriveLoyaltyState,
   ensureRedemptionAllowed,
@@ -14,7 +16,7 @@ import {
 } from "./loyalty";
 import type { CustomerSnapshot } from "./types";
 
-async function getLoyaltyTotals(customerId: string) {
+export async function getLoyaltyTotals(customerId: string) {
   const grouped = await prisma.coffeeEvent.groupBy({
     by: ["type"],
     where: { customerId },
@@ -89,7 +91,7 @@ export async function recordPurchase(customerId: string, count: number) {
     }
   });
 
-  await touchWalletPassAndSendUpdate(customerId);
+  await Promise.all([touchApplePassAndSendUpdate(customerId), touchGoogleWalletAndSendUpdate(customerId)]);
 
   return getCustomerSnapshot(customerId);
 }
@@ -107,7 +109,7 @@ export async function recordRewardRedemption(customerId: string, count: number) 
     },
   });
 
-  await touchWalletPassAndSendUpdate(customerId);
+  await Promise.all([touchApplePassAndSendUpdate(customerId), touchGoogleWalletAndSendUpdate(customerId)]);
 
   return getCustomerSnapshot(customerId);
 }
@@ -182,6 +184,27 @@ export async function getApplePassCustomerData(customerId: string): Promise<Appl
   return {
     id: customer.id,
     appleAuthToken: customer.appleAuthToken,
+    stampsInCycle: loyalty.stampsInCycle,
+    rewardsAvailable: loyalty.rewardsAvailable,
+    totalPaidCoffees: loyalty.totalPaidCoffees,
+    totalFreeRedeemed: loyalty.totalFreeRedeemed,
+  };
+}
+
+export async function getGoogleWalletCustomerData(customerId: string): Promise<GoogleWalletCustomer | null> {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+  });
+
+  if (!customer) {
+    return null;
+  }
+
+  const totals = await getLoyaltyTotals(customerId);
+  const loyalty = deriveLoyaltyState(totals);
+
+  return {
+    id: customer.id,
     stampsInCycle: loyalty.stampsInCycle,
     rewardsAvailable: loyalty.rewardsAvailable,
     totalPaidCoffees: loyalty.totalPaidCoffees,
