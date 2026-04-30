@@ -1,5 +1,5 @@
 diff --git a/lib/cjs/Signature.js b/lib/cjs/Signature.js
-index 399b4e468b0e93f2b0ff9d20d0adaa9c2afd3fc3..f9babf4cba7ec418de4edcc015d9b44e970e39b4 100644
+index 399b4e468b0e93f2b0ff9d20d0adaa9c2afd3fc3..a12a60aee1b9029aa05a62cfb4018363acb10283 100644
 --- a/lib/cjs/Signature.js
 +++ b/lib/cjs/Signature.js
 @@ -3,8 +3,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
@@ -41,13 +41,25 @@ index 399b4e468b0e93f2b0ff9d20d0adaa9c2afd3fc3..f9babf4cba7ec418de4edcc015d9b44e
  /**
   * Creates an hash for a buffer. Used by manifest
   *
-@@ -19,61 +49,57 @@ function createHash(buffer) {
+@@ -19,61 +49,69 @@ function createHash(buffer) {
  /**
   * Generates the PKCS #7 cryptografic signature for the manifest file.
   *
 + * Patched to perform the RSA op with Node's native crypto rather than
 + * node-forge's pure-JS implementation, which dominates pkpass generation
-+ * latency on hot paths.
++ * latency on hot paths. The forge private key is converted to a native
++ * KeyObject on first use and memoised in `nativeKeyCache` (WeakMap, keyed
++ * by the forge key) so the PEM is parsed at most once per process.
++ *
++ * The PKCS#7 SignedData ContentInfo is assembled by hand below:
++ *   signedAttrAsn1s (contentType, signingTime, messageDigest)
++ *     → signedAttrsForSigning (SET wrapper, DER-encoded for signing)
++ *     → rsaSignature (RSA-SHA1 over the DER bytes via native crypto)
++ *     → signerInfo (version, issuer+serial, digestAlg, signedAttrs,
++ *                    signatureAlg, signature)
++ *     → signedData (version, digestAlgs, encapContentInfo,
++ *                    certificatesAsn1, signerInfos)
++ *     → contentInfo (signedData OID + [0] EXPLICIT signedData)
 + *
   * @method create
   * @params manifest
@@ -147,14 +159,14 @@ index 399b4e468b0e93f2b0ff9d20d0adaa9c2afd3fc3..f9babf4cba7ec418de4edcc015d9b44e
  }
  /**
   * Parses the PEM-formatted passed text (certificates)
-@@ -98,4 +124,3 @@ function getStringCertificates(certificates) {
+@@ -98,4 +136,3 @@ function getStringCertificates(certificates) {
          signerKey: node_buffer_1.Buffer.from(certificates.signerKey).toString("utf-8"),
      };
  }
 -//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiU2lnbmF0dXJlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vc3JjL1NpZ25hdHVyZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQVdBLGdDQUtDO0FBV0Qsd0JBbUVDOztBQTlGRCxvRUFBK0I7QUFFL0IsNkNBQXFDO0FBRXJDOzs7OztHQUtHO0FBRUgsU0FBZ0IsVUFBVSxDQUFDLE1BQWM7SUFDeEMsTUFBTSxRQUFRLEdBQUcsb0JBQUssQ0FBQyxFQUFFLENBQUMsSUFBSSxDQUFDLE1BQU0sRUFBRSxDQUFDO0lBQ3hDLFFBQVEsQ0FBQyxNQUFNLENBQUMsTUFBTSxDQUFDLFFBQVEsQ0FBQyxRQUFRLENBQUMsQ0FBQyxDQUFDO0lBRTNDLE9BQU8sUUFBUSxDQUFDLE1BQU0sRUFBRSxDQUFDLEtBQUssRUFBRSxDQUFDO0FBQ2xDLENBQUM7QUFFRDs7Ozs7OztHQU9HO0FBRUgsU0FBZ0IsTUFBTSxDQUNyQixjQUFzQixFQUN0QixZQUF3QztJQUV4QyxNQUFNLFNBQVMsR0FBRyxvQkFBSyxDQUFDLEtBQUssQ0FBQyxnQkFBZ0IsRUFBRSxDQUFDO0lBRWpELFNBQVMsQ0FBQyxPQUFPLEdBQUcsSUFBSSxvQkFBSyxDQUFDLElBQUksQ0FBQyxnQkFBZ0IsQ0FBQyxjQUFjLENBQUMsQ0FBQztJQUVwRSxNQUFNLEVBQUUsSUFBSSxFQUFFLFVBQVUsRUFBRSxTQUFTLEVBQUUsR0FBRyxpQkFBaUIsQ0FDeEQscUJBQXFCLENBQUMsWUFBWSxDQUFDLENBQ25DLENBQUM7SUFFRixTQUFTLENBQUMsY0FBYyxDQUFDLElBQUksQ0FBQyxDQUFDO0lBQy9CLFNBQVMsQ0FBQyxjQUFjLENBQUMsVUFBVSxDQUFDLENBQUM7SUFFckM7Ozs7Ozs7T0FPRztJQUVILFNBQVMsQ0FBQyxTQUFTLENBQUM7UUFDbkIsR0FBRyxFQUFFLFNBQVM7UUFDZCxXQUFXLEVBQUUsVUFBVTtRQUN2QixlQUFlLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLElBQUk7UUFDcEMsdUJBQXVCLEVBQUU7WUFDeEI7Z0JBQ0MsSUFBSSxFQUFFLG9CQUFLLENBQUMsR0FBRyxDQUFDLElBQUksQ0FBQyxXQUFXO2dCQUNoQyxLQUFLLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLElBQUk7YUFDMUI7WUFDRDtnQkFDQyxJQUFJLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLGFBQWE7YUFDbEM7WUFDRDtnQkFDQyxJQUFJLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLFdBQVc7YUFDaEM7U0FDRDtLQUNELENBQUMsQ0FBQztJQUVIOzs7T0FHRztJQUVILFNBQVMsQ0FBQyxJQUFJLENBQUMsRUFBRSxRQUFRLEVBQUUsSUFBSSxFQUFFLENBQUMsQ0FBQztJQUVuQzs7Ozs7Ozs7Ozs7O09BWUc7SUFFSCxPQUFPLG9CQUFNLENBQUMsSUFBSSxDQUNqQixvQkFBSyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsU0FBUyxDQUFDLE1BQU0sRUFBRSxDQUFDLENBQUMsUUFBUSxFQUFFLEVBQy9DLFFBQVEsQ0FDUixDQUFDO0FBQ0gsQ0FBQztBQUVEOzs7Ozs7R0FNRztBQUVILFNBQVMsaUJBQWlCLENBQUMsWUFBd0M7SUFDbEUsTUFBTSxFQUFFLFVBQVUsRUFBRSxTQUFTLEVBQUUsSUFBSSxFQUFFLG1CQUFtQixFQUFFLEdBQUcsWUFBWSxDQUFDO0lBRTFFLE9BQU87UUFDTixVQUFVLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUMsQ0FBQztRQUN0RSxJQUFJLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUMsQ0FBQztRQUMxRCxTQUFTLEVBQUUsb0JBQUssQ0FBQyxHQUFHLENBQUMsb0JBQW9CLENBQ3hDLFNBQVMsQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDLEVBQzNCLG1CQUFtQixDQUNuQjtLQUNELENBQUM7QUFDSCxDQUFDO0FBRUQsU0FBUyxxQkFBcUIsQ0FDN0IsWUFBd0M7SUFLeEMsT0FBTztRQUNOLG1CQUFtQixFQUFFLFlBQVksQ0FBQyxtQkFBbUI7UUFDckQsSUFBSSxFQUFFLG9CQUFNLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyxJQUFJLENBQUMsQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDO1FBQ3RELFVBQVUsRUFBRSxvQkFBTSxDQUFDLElBQUksQ0FBQyxZQUFZLENBQUMsVUFBVSxDQUFDLENBQUMsUUFBUSxDQUFDLE9BQU8sQ0FBQztRQUNsRSxTQUFTLEVBQUUsb0JBQU0sQ0FBQyxJQUFJLENBQUMsWUFBWSxDQUFDLFNBQVMsQ0FBQyxDQUFDLFFBQVEsQ0FBQyxPQUFPLENBQUM7S0FDaEUsQ0FBQztBQUNILENBQUMifQ==
 \ No newline at end of file
 diff --git a/lib/esm/Signature.js b/lib/esm/Signature.js
-index 99a31afafddce82d8b2e4d2ae853aa40d4817674..e4a472c0785ba5265aabc9231f7fd826e8327ffb 100644
+index 99a31afafddce82d8b2e4d2ae853aa40d4817674..7873c766d550c1a3fa9f3ced0bdb4f8d9c94ac9b 100644
 --- a/lib/esm/Signature.js
 +++ b/lib/esm/Signature.js
 @@ -1,5 +1,35 @@
@@ -193,13 +205,25 @@ index 99a31afafddce82d8b2e4d2ae853aa40d4817674..e4a472c0785ba5265aabc9231f7fd826
  /**
   * Creates an hash for a buffer. Used by manifest
   *
-@@ -14,61 +44,57 @@ export function createHash(buffer) {
+@@ -14,61 +44,69 @@ export function createHash(buffer) {
  /**
   * Generates the PKCS #7 cryptografic signature for the manifest file.
   *
 + * Patched to perform the RSA op with Node's native crypto rather than
 + * node-forge's pure-JS implementation, which dominates pkpass generation
-+ * latency on hot paths.
++ * latency on hot paths. The forge private key is converted to a native
++ * KeyObject on first use and memoised in `nativeKeyCache` (WeakMap, keyed
++ * by the forge key) so the PEM is parsed at most once per process.
++ *
++ * The PKCS#7 SignedData ContentInfo is assembled by hand below:
++ *   signedAttrAsn1s (contentType, signingTime, messageDigest)
++ *     → signedAttrsForSigning (SET wrapper, DER-encoded for signing)
++ *     → rsaSignature (RSA-SHA1 over the DER bytes via native crypto)
++ *     → signerInfo (version, issuer+serial, digestAlg, signedAttrs,
++ *                    signatureAlg, signature)
++ *     → signedData (version, digestAlgs, encapContentInfo,
++ *                    certificatesAsn1, signerInfos)
++ *     → contentInfo (signedData OID + [0] EXPLICIT signedData)
 + *
   * @method create
   * @params manifest
@@ -299,7 +323,7 @@ index 99a31afafddce82d8b2e4d2ae853aa40d4817674..e4a472c0785ba5265aabc9231f7fd826
  }
  /**
   * Parses the PEM-formatted passed text (certificates)
-@@ -93,4 +119,3 @@ function getStringCertificates(certificates) {
+@@ -93,4 +131,3 @@ function getStringCertificates(certificates) {
          signerKey: Buffer.from(certificates.signerKey).toString("utf-8"),
      };
  }
