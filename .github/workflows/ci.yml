@@ -35,6 +35,9 @@ jobs:
       - run: pnpm check
         if: "!cancelled()"
 
+      - run: pnpm audit --audit-level=high --prod
+        if: "!cancelled()"
+
   db-migrate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
