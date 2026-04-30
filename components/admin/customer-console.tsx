@@ -10,10 +10,12 @@ import type { ActionKind, Customer } from "./types";
 
 export function CustomerConsole({
   applePassEnabled,
+  googleWalletEnabled,
   initialCustomer,
   initialRewardThreshold,
 }: {
   applePassEnabled: boolean;
+  googleWalletEnabled: boolean;
   initialCustomer: Customer;
   initialRewardThreshold: number;
 }) {
@@ -52,6 +54,7 @@ export function CustomerConsole({
         <CustomerPanel
           applePassEnabled={applePassEnabled}
           customer={customer}
+          googleWalletEnabled={googleWalletEnabled}
           isSubmitting={isSubmitting}
           onClose={backToScanner}
           onQuantityChange={setQuantity}

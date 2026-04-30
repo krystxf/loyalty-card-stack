@@ -17,6 +17,16 @@ const parsedEnv = createEnv({
     APPLE_PASS_CERT_PEM: z.string().optional(),
     APPLE_PASS_PRIVATE_KEY_PEM: z.string().optional(),
     APPLE_PASS_KEY_PASSPHRASE: z.string().optional(),
+    IS_GOOGLE_WALLET_ENABLED: z
+      .string()
+      .default("false")
+      .transform((value) => value.toLowerCase() === "true"),
+    GOOGLE_WALLET_ISSUER_ID: z.string().default(""),
+    GOOGLE_WALLET_CLASS_SUFFIX: z.string().default("loyalty"),
+    GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL: z.string().default(""),
+    GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH: z.string().default(".secrets/google-wallet/service-account.json"),
+    GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON: z.string().optional(),
+    GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY: z.string().optional(),
   },
   runtimeEnv: {
     PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL,
@@ -30,6 +40,13 @@ const parsedEnv = createEnv({
     APPLE_PASS_CERT_PEM: process.env.APPLE_PASS_CERT_PEM,
     APPLE_PASS_PRIVATE_KEY_PEM: process.env.APPLE_PASS_PRIVATE_KEY_PEM,
     APPLE_PASS_KEY_PASSPHRASE: process.env.APPLE_PASS_KEY_PASSPHRASE,
+    IS_GOOGLE_WALLET_ENABLED: process.env.IS_GOOGLE_WALLET_ENABLED,
+    GOOGLE_WALLET_ISSUER_ID: process.env.GOOGLE_WALLET_ISSUER_ID,
+    GOOGLE_WALLET_CLASS_SUFFIX: process.env.GOOGLE_WALLET_CLASS_SUFFIX,
+    GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL: process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL,
+    GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH: process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH,
+    GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON: process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON,
+    GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY: process.env.GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY,
   },
   emptyStringAsUndefined: true,
 });
@@ -52,6 +69,30 @@ function assertWalletEnvConfig() {
 
     if (!parsedEnv.APPLE_PASS_PRIVATE_KEY_PEM && !parsedEnv.APPLE_PASS_KEY_PATH) {
       issues.push("APPLE_PASS_PRIVATE_KEY_PEM or APPLE_PASS_KEY_PATH is required when IS_APPLE_PASS_ENABLED=true");
+    }
+  }
+
+  if (parsedEnv.IS_GOOGLE_WALLET_ENABLED) {
+    if (!parsedEnv.GOOGLE_WALLET_ISSUER_ID) {
+      issues.push("GOOGLE_WALLET_ISSUER_ID is required when IS_GOOGLE_WALLET_ENABLED=true");
+    }
+
+    if (!parsedEnv.GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL) {
+      issues.push("GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL is required when IS_GOOGLE_WALLET_ENABLED=true");
+    }
+
+    if (
+      !parsedEnv.GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY &&
+      !parsedEnv.GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON &&
+      !parsedEnv.GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH
+    ) {
+      issues.push(
+        "GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY, GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON or GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH is required when IS_GOOGLE_WALLET_ENABLED=true",
+      );
+    }
+
+    if (!parsedEnv.PUBLIC_BASE_URL) {
+      issues.push("PUBLIC_BASE_URL is required when IS_GOOGLE_WALLET_ENABLED=true (used for hosted class assets)");
     }
   }
 

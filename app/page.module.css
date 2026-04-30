@@ -71,6 +71,23 @@
   height: 56px;
 }
 
+.googleLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  transition: opacity 0.15s;
+}
+
+.googleLink:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+
+.googleBadge {
+  height: 56px;
+}
+
 .footer {
   display: flex;
   flex-direction: column;

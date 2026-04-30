@@ -317,7 +317,7 @@ export async function listUpdatedPassSerialNumbers(
   };
 }
 
-export function touchWalletPassAndSendUpdate(customerId: string) {
+export function touchApplePassAndSendUpdate(customerId: string) {
   if (!isApplePassEnabled()) {
     return;
   }
