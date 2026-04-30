@@ -1,8 +1,7 @@
-import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
-
 import { generateApplePass } from "@/lib/apple-pass";
 import { createCustomerWithWallet } from "@/lib/customer-snapshot";
+import { prisma } from "@/lib/db";
 import { isApplePassEnabled } from "@/lib/wallet-features";
 
 export const runtime = "nodejs";

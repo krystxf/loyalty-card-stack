@@ -1,8 +1,7 @@
-import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-
 import { buildCustomerResponse, recordRewardRedemption } from "@/lib/customer-snapshot";
+import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
 
