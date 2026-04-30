@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
+
 import { type CoffeeEventType, prisma } from "@/lib/db";
 
 import type { ApplePassCustomer } from "./apple-pass";
