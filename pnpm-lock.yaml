@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   passkit-generator@3.5.7:
-    hash: 2f0776d6d68204a352efc15d3c5d14a9fd5305323fdab15a06db6bbd67409165
+    hash: e865f2ce9b6b66173661f1ff5eec75e18a4b06e80e21131620d964d58d534186
     path: patches/passkit-generator@3.5.7.patch
 
 importers:
@@ -42,7 +42,7 @@ importers:
         version: 0.4.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       passkit-generator:
         specifier: ^3.5.7
-        version: 3.5.7(patch_hash=2f0776d6d68204a352efc15d3c5d14a9fd5305323fdab15a06db6bbd67409165)
+        version: 3.5.7(patch_hash=e865f2ce9b6b66173661f1ff5eec75e18a4b06e80e21131620d964d58d534186)
       react:
         specifier: ^19.2.5
         version: 19.2.5
@@ -3211,7 +3211,7 @@ snapshots:
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4
 
-  passkit-generator@3.5.7(patch_hash=2f0776d6d68204a352efc15d3c5d14a9fd5305323fdab15a06db6bbd67409165):
+  passkit-generator@3.5.7(patch_hash=e865f2ce9b6b66173661f1ff5eec75e18a4b06e80e21131620d964d58d534186):
     dependencies:
       do-not-zip: 1.0.0
       joi: 17.4.2
