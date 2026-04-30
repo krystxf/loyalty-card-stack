@@ -2,24 +2,13 @@
 
 import { z } from "zod";
 
-import {
-  buildCustomerResponse,
-  getCustomerSnapshot,
-  recordPurchase,
-  recordRewardRedemption,
-} from "./customer-snapshot";
+import { buildCustomerResponse, recordPurchase, recordRewardRedemption } from "./customer-snapshot";
 import type { CustomerResponse } from "./types";
 
 const mutationInputSchema = z.object({
   customerId: z.string().min(1),
   count: z.number().int().positive().max(100).default(1),
 });
-
-export async function lookupCustomerAction(customerId: string): Promise<CustomerResponse | null> {
-  const id = z.string().min(1).parse(customerId);
-  const customer = await getCustomerSnapshot(id);
-  return customer ? buildCustomerResponse(customer) : null;
-}
 
 export async function recordPurchaseAction(input: z.input<typeof mutationInputSchema>): Promise<CustomerResponse> {
   const { customerId, count } = mutationInputSchema.parse(input);

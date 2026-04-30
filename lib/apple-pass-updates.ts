@@ -2,6 +2,8 @@ import { connect } from "node:http2";
 
 import "server-only";
 
+import { after } from "next/server";
+
 import { env } from "@/env";
 import { prisma } from "@/lib/db";
 import { getApplePassCredentials } from "./apple-pass-credentials";
@@ -315,32 +317,34 @@ export async function listUpdatedPassSerialNumbers(
   };
 }
 
-export async function touchApplePassAndSendUpdate(customerId: string) {
+export function touchApplePassAndSendUpdate(customerId: string) {
   if (!isApplePassEnabled()) {
     return;
   }
 
-  const customer = await prisma.customer.update({
-    where: { id: customerId },
-    data: {
-      revision: {
-        increment: 1,
-      },
-    },
-    include: {
-      appleRegistrations: {
-        include: {
-          device: true,
+  after(async () => {
+    const customer = await prisma.customer.update({
+      where: { id: customerId },
+      data: {
+        revision: {
+          increment: 1,
         },
       },
-    },
+      include: {
+        appleRegistrations: {
+          include: {
+            device: true,
+          },
+        },
+      },
+    });
+
+    if (customer.appleRegistrations.length === 0) {
+      return;
+    }
+
+    await sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations);
   });
-
-  if (customer.appleRegistrations.length === 0) {
-    return;
-  }
-
-  await sendWalletPassUpdateNotifications(customer.id, customer.appleRegistrations);
 }
 
 export async function getWalletPassLastModified(customerId: string) {

@@ -6,20 +6,28 @@
     "build": "next build",
     "check": "tsc --noEmit",
     "biome:ci": "biome ci .",
-    "format": "biome format --write .",
+    "format": "biome check --write --linter-enabled=false .",
     "lint:fix": "biome check --write .",
     "dev": "next dev",
     "start": "next start",
+    "prepare": "husky",
     "prisma:generate": "dotenv -e .env.local -- prisma generate",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css}": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  },
   "pnpm": {
+    "minimumReleaseAge": 10080,
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
       "esbuild",
-      "prisma"
+      "prisma",
+      "sharp"
     ],
     "overrides": {
       "effect@<3.20.0": ">=3.20.0"
@@ -47,6 +55,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "dotenv-cli": "^11.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prisma": "^6.16.0",
     "typescript": "^5.9.2"
   }

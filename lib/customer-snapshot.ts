@@ -16,7 +16,12 @@ import {
 } from "./loyalty";
 import type { CustomerSnapshot } from "./types";
 
-export async function getLoyaltyTotals(customerId: string) {
+type LoyaltyTotals = {
+  totalPaidCoffees: number;
+  totalFreeRedeemed: number;
+};
+
+export async function getLoyaltyTotals(customerId: string): Promise<LoyaltyTotals> {
   const grouped = await prisma.coffeeEvent.groupBy({
     by: ["type"],
     where: { customerId },
@@ -31,26 +36,22 @@ export async function getLoyaltyTotals(customerId: string) {
   };
 }
 
-export async function getCustomerSnapshot(customerId: string): Promise<CustomerSnapshot | null> {
-  const [customer, totals] = await Promise.all([
-    prisma.customer.findUnique({
-      where: { id: customerId },
-      include: {
-        coffeeEvents: {
-          orderBy: { createdAt: "desc" },
-          take: 20,
-        },
+type CustomerWithEvents = NonNullable<Awaited<ReturnType<typeof findCustomerWithEvents>>>;
+
+function findCustomerWithEvents(customerId: string) {
+  return prisma.customer.findUnique({
+    where: { id: customerId },
+    include: {
+      coffeeEvents: {
+        orderBy: { createdAt: "desc" },
+        take: 20,
       },
-    }),
-    getLoyaltyTotals(customerId),
-  ]);
+    },
+  });
+}
 
-  if (!customer) {
-    return null;
-  }
-
+function buildSnapshot(customer: CustomerWithEvents, totals: LoyaltyTotals): CustomerSnapshot {
   const loyalty = deriveLoyaltyState(totals);
-
   return {
     id: customer.id,
     state: customer.state,
@@ -65,6 +66,16 @@ export async function getCustomerSnapshot(customerId: string): Promise<CustomerS
       createdAt: event.createdAt.toISOString(),
     })),
   };
+}
+
+export async function getCustomerSnapshot(customerId: string): Promise<CustomerSnapshot | null> {
+  const [customer, totals] = await Promise.all([findCustomerWithEvents(customerId), getLoyaltyTotals(customerId)]);
+
+  if (!customer) {
+    return null;
+  }
+
+  return buildSnapshot(customer, totals);
 }
 
 export async function recordPurchase(customerId: string, count: number) {
@@ -91,9 +102,18 @@ export async function recordPurchase(customerId: string, count: number) {
     }
   });
 
-  await Promise.all([touchApplePassAndSendUpdate(customerId), touchGoogleWalletAndSendUpdate(customerId)]);
+  touchApplePassAndSendUpdate(customerId);
+  touchGoogleWalletAndSendUpdate(customerId);
 
-  return getCustomerSnapshot(customerId);
+  const customer = await findCustomerWithEvents(customerId);
+  if (!customer) {
+    return null;
+  }
+
+  return buildSnapshot(customer, {
+    totalPaidCoffees: totals.totalPaidCoffees + count,
+    totalFreeRedeemed: totals.totalFreeRedeemed,
+  });
 }
 
 export async function recordRewardRedemption(customerId: string, count: number) {
@@ -109,9 +129,18 @@ export async function recordRewardRedemption(customerId: string, count: number) 
     },
   });
 
-  await Promise.all([touchApplePassAndSendUpdate(customerId), touchGoogleWalletAndSendUpdate(customerId)]);
+  touchApplePassAndSendUpdate(customerId);
+  touchGoogleWalletAndSendUpdate(customerId);
 
-  return getCustomerSnapshot(customerId);
+  const customer = await findCustomerWithEvents(customerId);
+  if (!customer) {
+    return null;
+  }
+
+  return buildSnapshot(customer, {
+    totalPaidCoffees: totals.totalPaidCoffees,
+    totalFreeRedeemed: totals.totalFreeRedeemed + count,
+  });
 }
 
 const CUSTOMER_ID_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
