@@ -24,10 +24,10 @@ importers:
         version: 11.14.0(@types/react@19.2.14)(react@19.2.5)
       '@prisma/client':
         specifier: ^6.16.0
-        version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
+        version: 6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)
       '@t3-oss/env-nextjs':
         specifier: ^0.13.11
-        version: 0.13.11(typescript@5.9.3)(zod@4.4.1)
+        version: 0.13.11(typescript@6.0.3)(zod@4.4.1)
       '@yudiel/react-qr-scanner':
         specifier: ^2.3.1
         version: 2.5.1(@types/emscripten@1.41.5)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -73,10 +73,10 @@ importers:
         version: 16.4.0
       prisma:
         specifier: ^6.16.0
-        version: 6.19.3(typescript@5.9.3)
+        version: 6.19.3(typescript@6.0.3)
       typescript:
-        specifier: ^5.9.2
-        version: 5.9.3
+        specifier: ^6.0.3
+        version: 6.0.3
 
 packages:
 
@@ -1300,8 +1300,8 @@ packages:
     resolution: {integrity: sha512-8ZiHFm91orbSAe2PSAiSVBVko18pbhbiB3U9GglSzF/zCGkR+rxpHx6sEMCUm4kxY4LjDIUGgCfUMtwfZfjfUA==}
     engines: {node: '>=20'}
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.3:
+    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1756,10 +1756,10 @@ snapshots:
 
   '@pandacss/is-valid-prop@1.10.0': {}
 
-  '@prisma/client@6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)':
+  '@prisma/client@6.19.3(prisma@6.19.3(typescript@6.0.3))(typescript@6.0.3)':
     optionalDependencies:
-      prisma: 6.19.3(typescript@5.9.3)
-      typescript: 5.9.3
+      prisma: 6.19.3(typescript@6.0.3)
+      typescript: 6.0.3
 
   '@prisma/config@6.19.3':
     dependencies:
@@ -1809,16 +1809,16 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@t3-oss/env-core@0.13.11(typescript@5.9.3)(zod@4.4.1)':
+  '@t3-oss/env-core@0.13.11(typescript@6.0.3)(zod@4.4.1)':
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
       zod: 4.4.1
 
-  '@t3-oss/env-nextjs@0.13.11(typescript@5.9.3)(zod@4.4.1)':
+  '@t3-oss/env-nextjs@0.13.11(typescript@6.0.3)(zod@4.4.1)':
     dependencies:
-      '@t3-oss/env-core': 0.13.11(typescript@5.9.3)(zod@4.4.1)
+      '@t3-oss/env-core': 0.13.11(typescript@6.0.3)(zod@4.4.1)
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
       zod: 4.4.1
 
   '@types/emscripten@1.41.5': {}
@@ -2743,12 +2743,12 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prisma@6.19.3(typescript@5.9.3):
+  prisma@6.19.3(typescript@6.0.3):
     dependencies:
       '@prisma/config': 6.19.3
       '@prisma/engines': 6.19.3
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.3
     transitivePeerDependencies:
       - magicast
 
@@ -2889,7 +2889,7 @@ snapshots:
     dependencies:
       tagged-tag: 1.0.0
 
-  typescript@5.9.3: {}
+  typescript@6.0.3: {}
 
   undici-types@7.16.0: {}
 

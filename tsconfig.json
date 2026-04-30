@@ -3,7 +3,6 @@
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "allowJs": false,
-    "baseUrl": ".",
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
