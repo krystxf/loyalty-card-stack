@@ -1,6 +1,6 @@
 # Loyalty card stack
 
-A self-hosted loyalty card system that issues Apple Wallet passes for cafes and small businesses. Customers add a pass to their phone, staff scan its QR code to add stamps, and the pass updates over the air via Apple's PassKit web service.
+A self-hosted loyalty card system that issues Apple Wallet **and** Google Wallet passes for cafes and small businesses. Customers add a pass to their phone, staff scan its QR code to add stamps, and the pass updates over the air via Apple's PassKit web service or the Google Wallet REST API.
 
 ## Setup
 
@@ -82,3 +82,35 @@ To sign passes you need three things from Apple: your **Team Identifier**, a **P
    For deployments where you can't ship files, paste the PEM contents into `APPLE_PASS_CERT_PEM` / `APPLE_PASS_PRIVATE_KEY_PEM` instead — they take precedence over the path variables.
 
 Pass Type ID certificates expire after one year. When that happens, repeat steps 3–6 with a fresh CSR; the Pass Type ID itself stays the same.
+
+### Google Wallet credentials
+
+To issue Google Wallet loyalty passes you need an **Issuer ID** and a **Service Account** with the *Wallet Object Issuer* role. All of this is set up through the [Google Wallet API console](https://pay.google.com/business/console/) and [Google Cloud console](https://console.cloud.google.com/).
+
+1. **Enable the Google Wallet API.** In the Google Cloud project that will host the integration, enable the *Google Wallet API* under [APIs & Services](https://console.cloud.google.com/apis/library/walletobjects.googleapis.com).
+
+2. **Create the issuer account.** Go to the [Google Wallet Business Console](https://pay.google.com/business/console/), accept the terms, and copy the numeric **Issuer ID** into `GOOGLE_WALLET_ISSUER_ID`. Until your account is approved for production, only the email addresses you list under *Test accounts* can save passes from your issuer.
+
+3. **Create a service account.** In the Google Cloud project, open [IAM → Service Accounts](https://console.cloud.google.com/iam-admin/serviceaccounts), create a new service account (e.g. `loyalty-wallet@<project>.iam.gserviceaccount.com`), and give it no IAM roles — Wallet permissions are granted in the Wallet console, not Cloud IAM.
+
+4. **Authorize the service account in the Wallet console.** Back in the Wallet Business Console, open *Users* and add the service account email with the *Developer* role so it can manage classes and objects for the issuer.
+
+5. **Download a JSON key.** From the service account page, *Keys → Add key → Create new key → JSON*. Save the file at `.secrets/google-wallet/service-account.json` (this path is the default `GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH`). Treat it like a password.
+
+6. **Wire it up in `.env.local`:**
+
+   ```sh
+   IS_GOOGLE_WALLET_ENABLED=true
+   GOOGLE_WALLET_ISSUER_ID=3388000000022XXXXXX
+   GOOGLE_WALLET_CLASS_SUFFIX=loyalty
+   GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL=loyalty-wallet@<project>.iam.gserviceaccount.com
+   GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_PATH=.secrets/google-wallet/service-account.json
+   ```
+
+   For deployments where you can't ship files, paste the JSON contents into `GOOGLE_WALLET_SERVICE_ACCOUNT_KEY_JSON`, or supply just the PEM in `GOOGLE_WALLET_SERVICE_ACCOUNT_PRIVATE_KEY` alongside `GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL`. Inline values take precedence over the path variable.
+
+   `PUBLIC_BASE_URL` is required when Google Wallet is enabled — the loyalty class references `${PUBLIC_BASE_URL}/google-wallet/logo.png` for the program logo, and the save link's JWT lists it under `origins`.
+
+7. **Loyalty class.** The class is created and updated automatically on first save (id: `${GOOGLE_WALLET_ISSUER_ID}.${GOOGLE_WALLET_CLASS_SUFFIX}`). New issuers start in `UNDER_REVIEW`, which is fine for testing — only listed test accounts can save the pass until the class is approved by Google for production.
+
+When stamps change, the server `PATCH`es the loyalty object via the Wallet REST API; saved passes refresh automatically on the user's device.
