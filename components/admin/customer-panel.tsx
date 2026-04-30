@@ -9,6 +9,7 @@ import type { ActionKind, Customer } from "./types";
 export function CustomerPanel({
   applePassEnabled,
   customer,
+  googleWalletEnabled,
   isSubmitting,
   onClose,
   onQuantityChange,
@@ -18,6 +19,7 @@ export function CustomerPanel({
 }: {
   applePassEnabled: boolean;
   customer: Customer;
+  googleWalletEnabled: boolean;
   isSubmitting: boolean;
   onClose: () => void;
   onQuantityChange: (next: number) => void;
@@ -47,12 +49,23 @@ export function CustomerPanel({
             <StatCard label="Free redeemed" value={customer.totalFreeRedeemed} />
           </SimpleGrid>
 
-          {applePassEnabled ? (
-            <Button asChild size="sm" variant="outline">
-              <NextLink href={`/api/customers/${customer.id}/apple-pass`} target="_blank" rel="noreferrer">
-                Apple Wallet pass
-              </NextLink>
-            </Button>
+          {applePassEnabled || googleWalletEnabled ? (
+            <Stack direction={{ base: "column", sm: "row" }} gap={2}>
+              {applePassEnabled ? (
+                <Button asChild flex={1} size="sm" variant="outline">
+                  <NextLink href={`/api/customers/${customer.id}/apple-pass`} target="_blank" rel="noreferrer">
+                    Apple Wallet pass
+                  </NextLink>
+                </Button>
+              ) : null}
+              {googleWalletEnabled ? (
+                <Button asChild flex={1} size="sm" variant="outline">
+                  <NextLink href={`/api/customers/${customer.id}/google-wallet`} target="_blank" rel="noreferrer">
+                    Google Wallet pass
+                  </NextLink>
+                </Button>
+              ) : null}
+            </Stack>
           ) : null}
 
           <ActionBox
