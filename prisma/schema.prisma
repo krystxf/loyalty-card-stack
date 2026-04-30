@@ -20,14 +20,15 @@ enum CoffeeEventType {
 }
 
 model Customer {
-  id                 String                  @id
-  appleAuthToken     String                  @unique
-  revision           Int                     @default(0)
-  state              WalletPassState         @default(PENDING)
-  createdAt          DateTime                @default(now())
-  updatedAt          DateTime                @updatedAt
-  coffeeEvents       CoffeeEvent[]
-  appleRegistrations ApplePassRegistration[]
+  id                     String                  @id
+  appleAuthToken         String                  @unique
+  hasGoogleWalletObject  Boolean                 @default(false)
+  revision               Int                     @default(0)
+  state                  WalletPassState         @default(PENDING)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  coffeeEvents           CoffeeEvent[]
+  appleRegistrations     ApplePassRegistration[]
 }
 
 model CoffeeEvent {
