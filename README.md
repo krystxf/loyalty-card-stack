@@ -58,7 +58,7 @@ To sign passes you need three things from Apple: your **Team Identifier**, a **P
 
 5. **Export key + cert as a `.p12`.** Double-click `pass.cer` to import it into Keychain Access. In *login* → *My Certificates*, find the entry that expands to show its private key, right-click → *Export…* → save as `pass.p12`. Set a passphrase when prompted.
 
-6. **Convert `.p12` to PEM** (the format `@walletpass/pass-js` consumes):
+6. **Convert `.p12` to PEM** (the format `passkit-generator` consumes):
 
    ```sh
    mkdir -p .secrets/apple-wallet
