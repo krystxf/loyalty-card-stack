@@ -85,3 +85,7 @@ To sign passes you need three things from Apple: your **Team Identifier**, a **P
    For deployments where you can't ship files, paste the PEM contents into `APPLE_PASS_CERT_PEM` / `APPLE_PASS_PRIVATE_KEY_PEM` instead — they take precedence over the path variables.
 
 Pass Type ID certificates expire after one year. When that happens, repeat steps 3–6 with a fresh CSR; the Pass Type ID itself stays the same.
+
+## Resources
+
+[Google loyalty pass builder with live preview](https://developers.google.com/wallet/retail/loyalty-cards/resources/pass-builder)
